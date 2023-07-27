@@ -1,12 +1,11 @@
-GET http://localhost:3000/api/members?team=engineering
+GET http://localhost:3000/api/members
 
 ###
 POST http://localhost:3000/api/members
 Content-Type: application/json
 
 {
-    "id": 11,
-    "name": "som",
+    "name": "som22",
     "team": "engineering",
     "position": "Server Developer",
     "emailAddress": "alex@google.com",
@@ -22,17 +21,9 @@ PUT http://localhost:3000/api/members/1
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "somsom",
-    "team": "engineering",
-    "position": "Server Developer",
-    "emailAddress": "alex@google.com",
-    "phoneNumber": "010-xxxx-xxxx",
-    "admissionDate": "2018/12/10",
-    "birthday": "1994/11/08",
-    "profileImage": "profile1.png"
+    "name": "leelee"
 }
 
 
 ###
-DELETE http://localhost:3000/api/members/1
+DELETE http://localhost:3000/api/members/12

@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 
-
+// 전체 직원 정보 조회, 만약 쿼리가 존재하면 특정 팀만 조회
 app.get('/api/members',  async (req, res) => {
   const { team } = req.query;
   if (team) {
@@ -22,9 +22,10 @@ app.get('/api/members',  async (req, res) => {
   }
 });
 
-app.get('/api/members/:id', (req, res) => {
+// 특정 직원 정보 조회
+app.get('/api/members/:id', async (req, res) => {
   const { id } = req.params;
-  const member = members.find((m) => m.id === Number(id));
+  const member = await Member.findOne({ where: { id } });
   if (member) {
     res.send(member);
   } else {
@@ -32,37 +33,57 @@ app.get('/api/members/:id', (req, res) => {
   }
 });
 
-app.post('/api/members', (req, res) => {
+// 정보 추가
+app.post('/api/members', async (req, res) => {
   const newMember = req.body;
-  members.push(newMember);
+  const member = Member.build(newMember);
+  await member.save();
   res.send(newMember);
 });
 
-app.put('/api/members/:id', (req, res) => {
+// 정보 수정
+app.put('/api/members/:id', async (req, res) => {
   const { id } = req.params;
   const newInfo = req.body;
-  const member = members.find((m) => m.id === Number(id));
-  if (member) {
-    Object.keys(newInfo).forEach((prop) => {
-      member[prop] = newInfo[prop];
-    });
-    res.send(member)
+  const member = await Member.update(newInfo, { where: { id } });
+  if (member[0]) {
+    res.send({ message: `${member[0]} row 수정`})
   } else {
     res.status(404).send({ message: "There is no Member" });
   }
 });
 
-app.delete('/api/members/:id', (req, res) => {
+/*
+// 정보 수정 다른 방법
+app.put('/api/members/:id', async (req, res) => {
   const { id } = req.params;
-  const membersCount = members.length;
-  members = members.filter((member) => member.id !== Number(id));
-  if (members.length < membersCount) {
-    res.send({ message: 'Deleted' });
+  const newInfo = req.body;
+  const member = await Member.findOne({ where: { id } });
+  if (member) {
+    Object.keys(newInfo).forEach((prop) => {
+      member[prop] = newInfo[prop];
+    });
+    await member.save()
+    res.send({ message: `수정`})
+  } else {
+    res.status(404).send({ message: "There is no Member" });
+  }
+});
+*/
+
+// 정보 삭제
+app.delete('/api/members/:id', async (req, res) => {
+  const { id } = req.params;
+  const deleteCount = await Member.destroy({ where: { id } })
+  if (deleteCount) {
+    res.send({ message: `${deleteCount} 'Deleted'` });
   } else {
     res.status(404).send({ message: 'Threr is no member' });
   }
 });
 
+
+// 포트 번호가 3000에서 실행
 app.listen(3000, () => {
   console.log('Server is listening...');
 });
